@@ -8,6 +8,7 @@ import {
 } from './lib/ranges';
 import { analyzeCoverage, findMissingCodepoints } from './lib/coverage';
 import { solveFallbackChain } from './lib/solver';
+import { analyzeSingleFontFailure } from './lib/resilience';
 import type { AuditInput, ChainEntry } from './lib/audit';
 import { SAMPLE_TEXT, sampleFonts, uid } from './lib/sample';
 import { formatSfntTag, parseSfntFont, SfntParseError } from './lib/sfnt';
@@ -144,6 +145,33 @@ export default function App() {
         .filter((_, i) => !solution.selected.includes(i))
         .map((e) => ({ name: e.font.name, preference: e.order })),
     [validEntries, solution.selected],
+  );
+
+  // ---- 单字体失效韧性分析：逐一移除链中字体并重解 ----
+  // 求解在过滤后的临时下标空间进行，结果一律映射回原始有效字体下标，
+  // 保证卡片与 JSON 中的字体名称始终对应原条目。
+  const resilience = useMemo(
+    () =>
+      solution.selected.length > 0
+        ? analyzeSingleFontFailure({
+            graphemes,
+            validFonts,
+            preference: validEntries.map((e) => e.order),
+            ignoreFormat,
+            lengthPriority,
+            baselineClusters: clusters,
+            baselineChain: solution.selected,
+          })
+        : [],
+    [
+      graphemes,
+      validFonts,
+      validEntries,
+      ignoreFormat,
+      lengthPriority,
+      clusters,
+      solution.selected,
+    ],
   );
 
   const auditInput: AuditInput = useMemo(
@@ -349,6 +377,7 @@ export default function App() {
             auditInput={auditInput}
             hasText={text.length > 0}
             useMeasured={useMeasured}
+            resilience={resilience}
           />
         </section>
       </main>

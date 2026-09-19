@@ -1,6 +1,7 @@
 import type { ClusterAudit, ParsedFont } from '../types';
 import { countCodepoints } from './ranges';
 import { formatCodepoint } from './grapheme';
+import type { FailureScenario } from './resilience';
 
 /** 转义 CSS 字符串中的引号与反斜杠 */
 export function cssStringEscape(name: string): string {
@@ -168,8 +169,89 @@ export function buildAuditReport(
   };
 }
 
-export async function copyToClipboard(text: string): Promise<boolean> {
-  try {
+/** 韧性分析报告的基线（失效前）摘要 */
+export interface ResilienceBaseline {
+  chain: ChainEntry[];
+  graphemeCount: number;
+  coveredCount: number;
+  missingCount: number;
+}
+
+/**
+ * 构建「单字体失效韧性分析」JSON 报告。
+ * scenarios 中的字体下标均为原始有效字体列表下标，此处统一映射回字体名称。
+ */
+export function buildResilienceReport(
+  input: AuditInput,
+  baseline: ResilienceBaseline,
+  scenarios: FailureScenario[],
+  validFonts: ParsedFont[],
+  generatedAt: string,
+) {
+  const fontName = (i: number) => validFonts[i].name;
+
+  return {
+    tool: 'unicode-font-fallback-audit',
+    analysis: 'single-font-failure-resilience',
+    version: 1,
+    generatedAt,
+    options: {
+      lengthPriority: input.lengthPriority,
+      ignoreFormatCodepoints: input.ignoreFormatCodepoints,
+      useMeasuredCoverage: input.useMeasuredCoverage,
+    },
+    baseline: {
+      graphemeCount: baseline.graphemeCount,
+      coveredCount: baseline.coveredCount,
+      missingCount: baseline.missingCount,
+      chainLength: baseline.chain.length,
+      chain: baseline.chain.map((e, i) => ({
+        order: i + 1,
+        font: e.name,
+        preference: e.preference + 1,
+        assignedClusters: e.assignedClusters,
+      })),
+    },
+    /** 已按新增缺失数降序排列 */
+    scenarios: scenarios.map((s) => ({
+      failedFont: {
+        font: fontName(s.fontIndex),
+        validFontIndex: s.fontIndex,
+        preference: s.preference + 1,
+      },
+      assignedClustersBefore: s.assignedBefore,
+      feasibleAfterFailure: s.feasible,
+      solverExact: s.exact,
+      chainLengthBefore: baseline.chain.length,
+      chainLengthAfter: s.chain.length,
+      chainLengthDelta: s.chainLengthDelta,
+      replacementChain: s.chain.map((f, i) => ({
+        order: i + 1,
+        font: fontName(f),
+        validFontIndex: f,
+        assignedClusters: s.chainAssigned[i],
+      })),
+      newMissingCount: s.newMissing.length,
+      newMissing: s.newMissing.map((c) => ({
+        index: c.index,
+        text: c.text,
+        codepoints: c.codepoints.map(formatCodepoint),
+        missingCodepoints: c.missingCodepoints.map(formatCodepoint),
+      })),
+      reassignedCount: s.reassigned.length,
+      reassigned: s.reassigned.map((c) => ({
+        index: c.index,
+        text: c.text,
+        codepoints: c.codepoints.map(formatCodepoint),
+        fromFont: fontName(c.fromFont),
+        toFont: fontName(c.toFont),
+      })),
+      stillMissingCount: s.stillMissing,
+    })),
+  };
+}
+
+export async function copyToClipboard(text: string): Promise<boolean> {  try {
     await navigator.clipboard.writeText(text);
     return true;
   } catch {

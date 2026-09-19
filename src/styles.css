@@ -613,6 +613,146 @@ code {
   white-space: nowrap;
 }
 
+/* ---- 单字体失效韧性分析 ---- */
+.resilience-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.resilience-head h3 {
+  margin: 0;
+}
+
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.risk-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel-2);
+}
+
+.risk-card.ok {
+  border-left: 3px solid var(--ok);
+}
+
+.risk-card.bad {
+  border-left: 3px solid var(--bad);
+  background: linear-gradient(90deg, var(--bad-soft), var(--panel-2) 45%);
+}
+
+.risk-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.risk-name {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risk-chain {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.risk-chain-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.risk-chain-arrow {
+  color: var(--muted);
+}
+
+.risk-chain-font {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.risk-details summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.risk-details summary:hover {
+  color: var(--accent);
+}
+
+.risk-section {
+  margin-top: 6px;
+}
+
+.risk-section-title {
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.risk-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px;
+}
+
+.risk-reassign-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 180px;
+  overflow: auto;
+  font-size: 12px;
+}
+
+.risk-reassign-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.glyph-inline {
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.risk-from {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.risk-to {
+  color: var(--ok);
+}
+
 /* ---- 明细表 ---- */
 .table-toolbar {
   display: flex;

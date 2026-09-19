@@ -57,6 +57,11 @@ npm run preview    # 预览构建产物 http://localhost:4173
 4. **结果**：概览统计、最优回退链（每种字体承接多少簇）、缺失告警、逐字素簇明细
    （可筛选），以及一键复制/下载的 CSS 与审计 JSON。审计 JSON 中每个字体含
    `effectiveCoverage`（本次实际生效的来源与区间）与 `declaredVsMeasured`（双向差集）。
+5. **单字体失效韧性分析**：对当前最优回退链中的每种字体，逐一模拟其不可用，并在
+   **保持原始偏好顺序与当前声明/实测覆盖模式**的前提下重新求解回退链。风险卡片按
+   **新增缺失数**降序展示：失效后的新增缺失簇、改由其他字体承接的簇、替代回退链
+   及链长变化（求解在过滤后的临时下标空间进行，结果始终映射回原始字体条目，名称
+   不会错配）。可一键下载韧性分析 JSON（`font-fallback-resilience.json`）。
 
 ## 求解模型
 
@@ -83,8 +88,9 @@ npm run preview    # 预览构建产物 http://localhost:4173
     │   ├── sfnt.ts        # 浏览器端 sfnt cmap（format 4/12）解析
     │   ├── coverage.ts    # 逐簇覆盖分析（按生效范围）
     │   ├── solver.ts      # 回退链求解（分支定界 + 启发式兜底）
-    │   └── audit.ts       # CSS / 审计 JSON 导出
-    └── components/        # 字体编辑器、明细表、结果面板
+    │   ├── resilience.ts  # 单字体失效韧性分析（逐一移除链中字体并重解）
+    │   └── audit.ts       # CSS / 审计 JSON / 韧性分析 JSON 导出
+    └── components/        # 字体编辑器、明细表、结果面板、韧性分析面板
 ```
 
 ## 隐私

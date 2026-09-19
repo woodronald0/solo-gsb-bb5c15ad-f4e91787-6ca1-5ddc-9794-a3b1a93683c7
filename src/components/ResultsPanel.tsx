@@ -10,7 +10,9 @@ import {
   type AuditResultData,
 } from '../lib/audit';
 import { displayCluster, formatCodepoint } from '../lib/grapheme';
+import type { FailureScenario } from '../lib/resilience';
 import ClusterTable, { type ClusterFilter } from './ClusterTable';
+import ResiliencePanel from './ResiliencePanel';
 
 interface ResultsPanelProps {
   clusters: ClusterAudit[];
@@ -24,6 +26,7 @@ interface ResultsPanelProps {
   auditInput: AuditInput;
   hasText: boolean;
   useMeasured: boolean;
+  resilience: FailureScenario[];
 }
 
 /** 结果区：概览、回退链、缺失告警、字素簇明细、导出 */
@@ -40,6 +43,7 @@ export default function ResultsPanel(props: ResultsPanelProps) {
     auditInput,
     hasText,
     useMeasured,
+    resilience,
   } = props;
 
   const [filter, setFilter] = useState<ClusterFilter>('all');
@@ -163,6 +167,21 @@ export default function ResultsPanel(props: ResultsPanelProps) {
           </>
         )}
       </section>
+
+      {resilience.length > 0 && (
+        <section className="block">
+          <ResiliencePanel
+            scenarios={resilience}
+            validFonts={validFonts}
+            chain={chain}
+            graphemeCount={clusters.length}
+            coveredCount={coveredCount}
+            missingCount={missing.length}
+            auditInput={auditInput}
+            generatedAt={generatedAt}
+          />
+        </section>
+      )}
 
       <section className="block">
         <ClusterTable clusters={clusters} validFonts={validFonts} filter={filter} onFilterChange={setFilter} />
