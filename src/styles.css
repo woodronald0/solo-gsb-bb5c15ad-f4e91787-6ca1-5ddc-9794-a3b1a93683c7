@@ -613,6 +613,209 @@ code {
   white-space: nowrap;
 }
 
+/* ---- 单字体失效韧性分析 ---- */
+.resilience-intro {
+  margin: 0 0 10px;
+}
+
+.risk-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.risk-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--muted);
+  border-radius: 9px;
+  background: var(--panel-2);
+}
+
+.risk-card.risk-high {
+  border-left-color: var(--bad);
+}
+
+.risk-card.risk-medium {
+  border-left-color: var(--warn);
+}
+
+.risk-card.risk-low {
+  border-left-color: var(--ok);
+}
+
+.risk-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.risk-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.risk-font {
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risk-badge {
+  flex-shrink: 0;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.risk-badge.high {
+  background: var(--bad-soft);
+  color: var(--bad);
+  border-color: rgba(248, 81, 73, 0.4);
+}
+
+.risk-badge.medium {
+  background: rgba(210, 153, 34, 0.14);
+  color: var(--warn);
+  border-color: rgba(210, 153, 34, 0.4);
+}
+
+.risk-badge.low {
+  background: var(--ok-soft);
+  color: var(--ok);
+  border-color: rgba(63, 185, 80, 0.4);
+}
+
+.risk-badge.idle {
+  background: var(--panel);
+  color: var(--muted);
+}
+
+.risk-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.risk-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 4px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--bg);
+}
+
+.risk-stat-num {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.risk-stat-label {
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.risk-stat.bad .risk-stat-num {
+  color: var(--bad);
+}
+
+.risk-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 12px;
+}
+
+.bad-text {
+  color: var(--bad);
+}
+
+.takeover-chip {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: var(--ok-soft);
+  border: 1px solid rgba(63, 185, 80, 0.35);
+  color: var(--ok);
+  font-size: 12px;
+}
+
+.reassign-chip {
+  display: inline-block;
+  margin: 2px 4px 2px 0;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+
+.risk-details summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.alt-chain-list {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 12px;
+}
+
+.alt-chain-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.alt-order {
+  color: var(--muted);
+  min-width: 18px;
+}
+
+.alt-name {
+  font-weight: 600;
+}
+
+.join-badge {
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid rgba(88, 166, 255, 0.35);
+}
+
+.risk-extra {
+  margin: 6px 0 0;
+}
+
+.resilience-export {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
 /* ---- 明细表 ---- */
 .table-toolbar {
   display: flex;

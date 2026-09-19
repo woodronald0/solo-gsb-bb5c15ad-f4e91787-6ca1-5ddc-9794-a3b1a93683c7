@@ -8,6 +8,7 @@ import {
 } from './lib/ranges';
 import { analyzeCoverage, findMissingCodepoints } from './lib/coverage';
 import { solveFallbackChain } from './lib/solver';
+import { analyzeResilience } from './lib/resilience';
 import type { AuditInput, ChainEntry } from './lib/audit';
 import { SAMPLE_TEXT, sampleFonts, uid } from './lib/sample';
 import { formatSfntTag, parseSfntFont, SfntParseError } from './lib/sfnt';
@@ -144,6 +145,21 @@ export default function App() {
         .filter((_, i) => !solution.selected.includes(i))
         .map((e) => ({ name: e.font.name, preference: e.order })),
     [validEntries, solution.selected],
+  );
+
+  // ---- 单字体失效韧性分析：逐个模拟当前最优链上字体不可用并重新求解 ----
+  // 偏好位次、声明/实测覆盖模式均与本次审计一致；分析内部通过
+  // 幸存局部下标 -> 原始下标映射，确保结果名称/位次回到原字体条目。
+  const resilience = useMemo(
+    () =>
+      analyzeResilience({
+        clusters,
+        validFonts,
+        preferences: validEntries.map((e) => e.order),
+        baselineChain: solution.selected,
+        lengthPriority,
+      }),
+    [clusters, validFonts, validEntries, solution.selected, lengthPriority],
   );
 
   const auditInput: AuditInput = useMemo(
@@ -342,6 +358,7 @@ export default function App() {
             validFonts={validFonts}
             chain={chain}
             unselected={unselected}
+            resilience={resilience}
             feasible={solution.feasible}
             exact={solution.exact}
             objective={solution.objective}
@@ -349,6 +366,7 @@ export default function App() {
             auditInput={auditInput}
             hasText={text.length > 0}
             useMeasured={useMeasured}
+            ignoreFormat={ignoreFormat}
           />
         </section>
       </main>

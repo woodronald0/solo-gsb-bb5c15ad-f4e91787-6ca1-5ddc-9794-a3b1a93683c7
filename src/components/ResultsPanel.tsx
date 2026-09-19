@@ -11,12 +11,15 @@ import {
 } from '../lib/audit';
 import { displayCluster, formatCodepoint } from '../lib/grapheme';
 import ClusterTable, { type ClusterFilter } from './ClusterTable';
+import ResiliencePanel from './ResiliencePanel';
+import type { FontFailureResult } from '../lib/resilience';
 
 interface ResultsPanelProps {
   clusters: ClusterAudit[];
   validFonts: ParsedFont[];
   chain: ChainEntry[];
   unselected: { name: string; preference: number }[];
+  resilience: FontFailureResult[];
   feasible: boolean;
   exact: boolean;
   objective: number;
@@ -24,6 +27,7 @@ interface ResultsPanelProps {
   auditInput: AuditInput;
   hasText: boolean;
   useMeasured: boolean;
+  ignoreFormat: boolean;
 }
 
 /** 结果区：概览、回退链、缺失告警、字素簇明细、导出 */
@@ -33,6 +37,7 @@ export default function ResultsPanel(props: ResultsPanelProps) {
     validFonts,
     chain,
     unselected,
+    resilience,
     feasible,
     exact,
     objective,
@@ -40,6 +45,7 @@ export default function ResultsPanel(props: ResultsPanelProps) {
     auditInput,
     hasText,
     useMeasured,
+    ignoreFormat,
   } = props;
 
   const [filter, setFilter] = useState<ClusterFilter>('all');
@@ -162,6 +168,18 @@ export default function ResultsPanel(props: ResultsPanelProps) {
             </p>
           </>
         )}
+      </section>
+
+      <section className="block">
+        <h3>单字体失效韧性分析</h3>
+        <ResiliencePanel
+          results={resilience}
+          baselineChain={chain}
+          validFonts={validFonts}
+          lengthPriority={auditInput.lengthPriority}
+          ignoreFormat={ignoreFormat}
+          useMeasured={useMeasured}
+        />
       </section>
 
       <section className="block">
